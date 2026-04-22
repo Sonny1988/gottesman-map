@@ -249,9 +249,8 @@
   const REF = { label: '311 Route des Chenus', lat: 45.415710, lng: 6.629340 }; // validé manuellement 2026-04-22
 
   const apartments = [
-    // ─ Centre 1850 — Rue de Park City / Croisette / front de neige
     {
-      id:  1, ref: 'CAR 109',
+      id:  1, ref: 'CAR 109',      pdf: 'pdfs/CAR109.pdf',
       lat: 45.415835, lng: 6.630914,
       size: '35 m²', beds: '1 ch + coin montagne', guests: '4 pers',
       sector: 'Centre 1850', location: 'Centre 1850',
@@ -259,7 +258,7 @@
       features: 'Studio confortable · Centre village · Commerces à pied',
     },
     {
-      id:  2, ref: 'RPDP 606',
+      id:  2, ref: 'RPDP 606',     pdf: 'pdfs/RPDP606.pdf',
       lat: 45.415692, lng: 6.631193,
       size: '38 m²', beds: '1 ch + cabine', guests: '4 pers',
       sector: 'Centre, ski-in/ski-out', location: 'Centre 1850 — Ski in / Ski out',
@@ -267,7 +266,7 @@
       features: 'Résidence Rond Point des Pistes · Accès direct skis aux pieds',
     },
     {
-      id:  3, ref: 'RPDP 305',
+      id:  3, ref: 'RPDP 305',     pdf: 'pdfs/RPDP305.pdf',
       lat: 45.415541, lng: 6.631118,
       size: '38 m²', beds: '1 ch + cabine', guests: '4 pers',
       sector: 'Centre, ski-in/ski-out', location: 'Centre 1850 — Ski in / Ski out',
@@ -275,7 +274,7 @@
       features: 'Résidence Rond Point des Pistes · Vue sur les pistes · Casier à skis',
     },
     {
-      id:  4, ref: 'CHAM 28',
+      id:  4, ref: 'CHAM 28',      pdf: 'pdfs/CHAM28.pdf',
       lat: 45.415413, lng: 6.631172,
       size: '58 m²', beds: '2 ch', guests: '5 pers',
       sector: 'Centre, front de neige', location: 'Centre 1850 — Front de neige',
@@ -283,7 +282,7 @@
       features: 'Front de neige · Vue pistes · Grande terrasse',
     },
     {
-      id:  5, ref: 'CAVAN',
+      id:  5, ref: 'CAVAN',        pdf: 'pdfs/CAVAN.pdf',
       lat: 45.416490, lng: 6.627921,
       size: '95 m²', beds: '2 ch', guests: '4 pers',
       sector: 'Chalet, proche pistes', location: 'Proche pistes',
@@ -291,16 +290,15 @@
       features: 'Grand chalet · Espaces généreux · Vue panoramique',
     },
     {
-      id:  6, ref: 'COSY CHABLIS',
+      id:  6, ref: 'COSY CHABLIS', pdf: 'pdfs/COSY_CHABLIS.pdf',
       lat: 45.416061, lng: 6.630850,
       size: '50 m²', beds: '2 ch', guests: '4 pers',
       sector: 'Centre, proche pistes', location: 'Centre 1850 — Proche pistes',
       price: '39 450 €', skiInOut: false, type: 'centre',
       features: 'Appartement haut de gamme · Proche pistes · Déco soignée',
     },
-    // ─ Secteur Chenus (Route des Chenus)
     {
-      id:  7, ref: 'ROUL 28',
+      id:  7, ref: 'ROUL 28',      pdf: 'pdfs/ROUL28.pdf',
       lat: 45.416566, lng: 6.628575,
       size: '45 m²', beds: '2 ch', guests: '4 pers',
       sector: 'Quartier Chenus', location: 'Secteur Chenus',
@@ -308,7 +306,7 @@
       features: 'Quartier résidentiel Chenus · Calme · Vue montagne',
     },
     {
-      id:  8, ref: 'ARC 3',
+      id:  8, ref: 'ARC 3',        pdf: 'pdfs/ARC3.pdf',
       lat: 45.416159, lng: 6.628801,
       size: '50 m²', beds: '2 ch', guests: '4 pers',
       sector: 'Quartier Chenus', location: 'Secteur Chenus',
@@ -316,7 +314,7 @@
       features: 'Résidence de l\'Arc · Chenus · Balcon · Casier à skis',
     },
     {
-      id:  9, ref: 'SUG 11',
+      id:  9, ref: 'SUG 11',       pdf: 'pdfs/SUG11.pdf',
       lat: 45.416542, lng: 6.629670,
       size: '55 m²', beds: '3 ch', guests: '6 pers',
       sector: 'Centre, Quartier Chenus', location: 'Entrée Chenus — 100m des pistes',
@@ -324,7 +322,7 @@
       features: 'Duplex · Cheminée · Terrasse SE · Cave à vin',
     },
     {
-      id: 10, ref: 'CHANT 4B',
+      id: 10, ref: 'CHANT 4B',     pdf: 'pdfs/CHANT4B.pdf',
       lat: 45.416046, lng: 6.627352,
       size: '81 m²', beds: '3 ch', guests: '6 pers',
       sector: 'Quartier Chenus', location: 'Secteur Chenus — 100m des pistes',
@@ -332,7 +330,7 @@
       features: 'Balcon · Vue panoramique · Entièrement rénové · Casier à skis',
     },
     {
-      id: 11, ref: 'CHANT 3B',
+      id: 11, ref: 'CHANT 3B',     pdf: 'pdfs/CHANT3B.pdf',
       lat: 45.416227, lng: 6.627395,
       size: '75 m²', beds: '3 ch', guests: '7 pers',
       sector: 'Quartier Chenus', location: 'Secteur Chenus — 100m des pistes',
@@ -340,7 +338,7 @@
       features: 'Balcon · Vue montagne · Rénové · Casier à skis',
     },
     {
-      id: 12, ref: 'RPDP 502',
+      id: 12, ref: 'RPDP 502',     pdf: 'pdfs/RPDP502.pdf',
       lat: 45.415654, lng: 6.630925,
       size: '68 m²', beds: '3 ch', guests: '6 pers',
       sector: 'Centre, ski-in/ski-out', location: 'Centre 1850 — Ski in / Ski out',
@@ -477,6 +475,7 @@
             </p>
             <div class="price-line">💰 ${apt.price} / 6 semaines</div>
             <div class="dist-line" id="popup-dist-${apt.id}">📏 ${distLabel(d)} depuis le point de référence</div>
+            ${apt.pdf ? `<a href="${apt.pdf}" target="_blank" style="display:block; margin-top:10px; padding:6px 10px; background:#c9a96e; color:#0f0f0f; text-align:center; text-decoration:none; border-radius:3px; font-family:Arial,sans-serif; font-size:10px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">📄 Voir la fiche PDF</a>` : ''}
           </div>`, { maxWidth: 250, minWidth: 220 });
 
       marker.on('dragend', () => {
