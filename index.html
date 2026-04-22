@@ -414,7 +414,7 @@
 
   function buildMap() {
     // Reference marker — draggable
-    refMarker = L.marker([REF.lat, REF.lng], { icon: refIcon, draggable: true })
+    refMarker = L.marker([REF.lat, REF.lng], { icon: refIcon, draggable: false })
       .addTo(map)
       .bindPopup(`
         <div class="popup-content">
@@ -465,7 +465,7 @@
         iconSize: [34,34], iconAnchor: [17,17], popupAnchor: [0,-20],
       });
 
-      const marker = L.marker([apt.lat, apt.lng], { icon, draggable: true })
+      const marker = L.marker([apt.lat, apt.lng], { icon, draggable: false })
         .addTo(map)
         .bindPopup(`
           <div class="popup-content">
@@ -475,7 +475,7 @@
               ${apt.skiInOut ? '<span class="highlight">⛷ Ski in / Ski out</span><br>' : ''}
               📍 ${apt.location}<br><br>${apt.features}
             </p>
-            <div class="price-line">💰 ${apt.price} / saison</div>
+            <div class="price-line">💰 ${apt.price} / 6 semaines</div>
             <div class="dist-line" id="popup-dist-${apt.id}">📏 ${distLabel(d)} depuis le point de référence</div>
           </div>`, { maxWidth: 250, minWidth: 220 });
 
