@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Courchevel 1850 — Gottesman Apartments</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #0f0f0f;
+      color: #fff;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      background: #0f0f0f;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #2a2a2a;
+      flex-shrink: 0;
+      gap: 8px;
+    }
+    header h1 { font-size: 12px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase; color: #c9a96e; line-height: 1.3; }
+    header span { font-size: 10px; color: #666; letter-spacing: 1px; white-space: nowrap; }
+
+    .map-container { flex: 1; position: relative; min-height: 0; }
+    #map { width: 100%; height: 100%; }
+
+    /* ── DESKTOP sidebar ── */
+    .sidebar {
+      position: absolute;
+      top: 16px; right: 16px;
+      z-index: 1000;
+      background: rgba(15,15,15,0.96);
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      width: 275px;
+      max-height: calc(100% - 32px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── MOBILE bottom drawer ── */
+    @media (max-width: 600px) {
+      .sidebar {
+        top: auto; right: 0; left: 0;
+        bottom: 0;
+        width: 100%;
+        border-radius: 14px 14px 0 0;
+        max-height: 42%;
+        border: none;
+        border-top: 1px solid #2a2a2a;
+      }
+      .legend { display: none !important; }
+      #coords-panel { min-width: unset !important; width: calc(100% - 24px) !important; left: 12px !important; transform: none !important; bottom: 44% !important; }
+    }
+
+    .sidebar-title {
+      padding: 10px 16px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #c9a96e;
+      border-bottom: 1px solid #2a2a2a;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .drag-handle {
+      display: none;
+      width: 36px; height: 4px;
+      background: #3a3a3a; border-radius: 2px;
+      margin: 8px auto 0;
+      flex-shrink: 0;
+    }
+    @media (max-width: 600px) { .drag-handle { display: block; } }
+
+    .ref-card {
+      padding: 8px 16px;
+      border-bottom: 2px solid #c9a96e;
+      background: #1a1500;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .ref-card .ref-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #c9a96e; margin-bottom: 1px; }
+    .ref-card .ref-address { font-size: 12px; color: #fff; font-family: 'Arial', sans-serif; }
+
+    .apt-list { overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
+    .apt-list::-webkit-scrollbar { width: 3px; }
+    .apt-list::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+
+    .apt-card {
+      padding: 9px 16px;
+      border-bottom: 1px solid #1a1a1a;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .apt-card:last-child { border-bottom: none; }
+    .apt-card:active { background: #1a1a1a; }
+
+    .apt-card .ref { font-size: 12px; color: #c9a96e; letter-spacing: 1px; margin-bottom: 1px; }
+    .apt-card .details { font-size: 10px; color: #777; line-height: 1.4; font-family: 'Arial', sans-serif; }
+    .apt-card .price { font-size: 11px; color: #aaa; font-family: 'Arial', sans-serif; margin-top: 2px; }
+    .apt-card .badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+
+    .badge {
+      display: inline-block; padding: 2px 7px;
+      font-size: 9px; letter-spacing: 1px;
+      border-radius: 2px; font-family: 'Arial', sans-serif; text-transform: uppercase;
+    }
+    .badge-ski    { background: #1a3a2a; color: #4caf7d; }
+    .badge-chenus { background: #1a2a3a; color: #5a9fd4; }
+    .badge-centre { background: #2a1a2a; color: #b07fc8; }
+    .badge-dist   { background: #2a2000; color: #c9a96e; }
+
+    /* Popup */
+    .leaflet-popup-content-wrapper {
+      background: #0f0f0f; border: 1px solid #c9a96e;
+      border-radius: 4px; color: #fff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    }
+    .leaflet-popup-tip { background: #c9a96e; }
+    .leaflet-popup-close-button { color: #c9a96e !important; }
+    .popup-content h3 { font-size: 13px; color: #c9a96e; letter-spacing: 1px; margin-bottom: 6px; }
+    .popup-content p  { font-size: 11px; color: #ccc; line-height: 1.7; font-family: 'Arial', sans-serif; }
+    .popup-content .highlight { color: #4caf7d; font-weight: bold; }
+    .popup-content .price-line { color: #c9a96e; font-size: 12px; font-weight: bold; margin-top: 6px; }
+    .popup-content .dist-line { margin-top: 8px; padding-top: 8px; border-top: 1px solid #2a2a2a; color: #c9a96e; font-size: 10px; }
+
+    /* Legend — desktop only */
+    .legend {
+      position: absolute; bottom: 16px; left: 16px;
+      z-index: 1000;
+      background: rgba(15,15,15,0.9); border: 1px solid #2a2a2a;
+      border-radius: 4px; padding: 10px 14px;
+      font-family: 'Arial', sans-serif; font-size: 10px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; color: #888; }
+    .legend-item:last-child { margin-bottom: 0; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; flex-shrink: 0; }
+    .legend-star {
+      width: 12px; height: 12px; border-radius: 50%;
+      border: 2px solid #c9a96e; background: #fff;
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 7px; color: #c9a96e;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>courchevel.rentals — Gottesman Apartments</h1>
+  <span>12 apartments · Courchevel 1850 · Winter 2025/2026</span>
+</header>
+
+<div class="map-container">
+  <div id="map"></div>
+
+  <div class="sidebar">
+    <div class="drag-handle"></div>
+    <div class="sidebar-title">Distances from the chalet</div>
+
+    <div class="ref-card" onclick="flyToRef()">
+      <div class="ref-label">★ Reference point</div>
+      <div class="ref-address">311 Rue des Chenus, 1850</div>
+    </div>
+
+    <div class="apt-list" id="apt-list">
+      <!-- injected by JS -->
+    </div>
+  </div>
+
+  <!-- Coords export panel -->
+  <div id="coords-panel" style="display:none; position:absolute; bottom:28px; left:50%; transform:translateX(-50%); z-index:1000;
+    background:rgba(255,255,255,0.97); border:1px solid #c9a96e; border-radius:6px;
+    padding:12px 14px; font-family:monospace; font-size:11px; min-width:420px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-family:Arial,sans-serif; font-size:11px; font-weight:bold; color:#333; letter-spacing:1px; text-transform:uppercase;">Current coordinates</span>
+      <div style="display:flex; gap:8px;">
+        <button onclick="navigator.clipboard.writeText(document.getElementById('coords-box').value)" style="font-size:10px; padding:3px 10px; background:#c9a96e; color:#fff; border:none; border-radius:3px; cursor:pointer;">Copy</button>
+        <button onclick="document.getElementById('coords-panel').style.display='none'" style="font-size:10px; padding:3px 10px; background:#eee; color:#333; border:none; border-radius:3px; cursor:pointer;">✕</button>
+      </div>
+    </div>
+    <textarea id="coords-box" rows="8" readonly style="width:100%; font-size:10px; font-family:monospace; border:1px solid #ddd; border-radius:3px; padding:6px; resize:none; color:#333; background:#fafafa;"></textarea>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-star">★</div>
+      311 Rue des Chenus (reference)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#4caf7d;"></div>
+      Ski in / Ski out
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#c9a96e;"></div>
+      Chenus area
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#b07fc8;"></div>
+      Centre 1850 / Other
+    </div>
+    <div style="margin-top:8px; border-top:1px solid #2a2a2a; padding-top:8px; font-size:9px; color:#666; line-height:1.5;">
+      ↕ Drag markers to reposition
+    </div>
+    <button onclick="showCoords()" style="margin-top:8px; width:100%; font-size:10px; padding:5px; background:#c9a96e; color:#0f0f0f; border:none; border-radius:3px; cursor:pointer; letter-spacing:1px; text-transform:uppercase; font-weight:bold;">
+      📋 View coordinates
+    </button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map('map', {
+    center: [45.4157, 6.6305],
+    zoom: 15,
+    zoomControl: true,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap contributors © CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  const REF = { label: '311 Route des Chenus', lat: 45.415710, lng: 6.629340 };
+
+  const apartments = [
+    {
+      id:  1, ref: 'CAR 109',
+      lat: 45.415835, lng: 6.630914,
+      size: '35 m²', beds: '1 bed + bunk', guests: '4 guests',
+      sector: 'Centre 1850', location: 'Village centre',
+      price: '€15,700', skiInOut: false, type: 'centre',
+      features: 'Comfortable studio · Village centre · Shops nearby',
+    },
+    {
+      id:  2, ref: 'RPDP 606',
+      lat: 45.415692, lng: 6.631193,
+      size: '38 m²', beds: '1 bed + cabin', guests: '4 guests',
+      sector: 'Centre, ski-in/ski-out', location: 'Centre 1850 — Ski in / Ski out',
+      price: '€19,100', skiInOut: true, type: 'ski',
+      features: 'Résidence Rond Point des Pistes · Direct ski access',
+    },
+    {
+      id:  3, ref: 'RPDP 305',
+      lat: 45.415541, lng: 6.631118,
+      size: '38 m²', beds: '1 bed + cabin', guests: '4 guests',
+      sector: 'Centre, ski-in/ski-out', location: 'Centre 1850 — Ski in / Ski out',
+      price: '€21,500', skiInOut: true, type: 'ski',
+      features: 'Résidence Rond Point des Pistes · Piste views · Ski locker',
+    },
+    {
+      id:  4, ref: 'CHAM 28',
+      lat: 45.415413, lng: 6.631172,
+      size: '58 m²', beds: '2 beds', guests: '5 guests',
+      sector: 'Centre, ski front', location: 'Centre 1850 — Ski front',
+      price: '€26,600', skiInOut: false, type: 'centre',
+      features: 'Ski front · Piste views · Large terrace',
+    },
+    {
+      id:  5, ref: 'CAVAN',
+      lat: 45.416490, lng: 6.627921,
+      size: '95 m²', beds: '2 beds', guests: '4 guests',
+      sector: 'Chalet, near slopes', location: 'Near slopes',
+      price: '€27,000', skiInOut: false, type: 'centre',
+      features: 'Spacious chalet · Generous living space · Panoramic views',
+    },
+    {
+      id:  6, ref: 'COSY CHABLIS',
+      lat: 45.416061, lng: 6.630850,
+      size: '50 m²', beds: '2 beds', guests: '4 guests',
+      sector: 'Centre, near slopes', location: 'Centre 1850 — Near slopes',
+      price: '€39,450', skiInOut: false, type: 'centre',
+      features: 'Upscale apartment · Near slopes · Fine interiors',
+    },
+    {
+      id:  7, ref: 'ROUL 28',
+      lat: 45.416566, lng: 6.628575,
+      size: '45 m²', beds: '2 beds', guests: '4 guests',
+      sector: 'Chenus area', location: 'Chenus area',
+      price: '€17,700', skiInOut: false, type: 'chenus',
+      features: 'Residential Chenus · Quiet · Mountain views',
+    },
+    {
+      id:  8, ref: 'ARC 3',
+      lat: 45.416159, lng: 6.628801,
+      size: '50 m²', beds: '2 beds', guests: '4 guests',
+      sector: 'Chenus area', location: 'Chenus area',
+      price: '€19,700', skiInOut: false, type: 'chenus',
+      features: 'Résidence de l\'Arc · Chenus · Balcony · Ski locker',
+    },
+    {
+      id:  9, ref: 'SUG 11',
+      lat: 45.416542, lng: 6.629670,
+      size: '55 m²', beds: '3 beds', guests: '6 guests',
+      sector: 'Centre, Chenus area', location: 'Chenus entrance — 100m from slopes',
+      price: '€23,600', skiInOut: false, type: 'chenus',
+      features: 'Duplex · Fireplace · SE terrace · Wine cellar',
+    },
+    {
+      id: 10, ref: 'CHANT 4B',
+      lat: 45.416046, lng: 6.627352,
+      size: '81 m²', beds: '3 beds', guests: '6 guests',
+      sector: 'Chenus area', location: 'Chenus area — 100m from slopes',
+      price: '€25,700', skiInOut: false, type: 'chenus',
+      features: 'Balcony · Panoramic views · Fully renovated · Ski locker',
+    },
+    {
+      id: 11, ref: 'CHANT 3B',
+      lat: 45.416227, lng: 6.627395,
+      size: '75 m²', beds: '3 beds', guests: '7 guests',
+      sector: 'Chenus area', location: 'Chenus area — 100m from slopes',
+      price: '€30,600', skiInOut: false, type: 'chenus',
+      features: 'Balcony · Mountain views · Renovated · Ski locker',
+    },
+    {
+      id: 12, ref: 'RPDP 502',
+      lat: 45.415654, lng: 6.630925,
+      size: '68 m²', beds: '3 beds', guests: '6 guests',
+      sector: 'Centre, ski-in/ski-out', location: 'Centre 1850 — Ski in / Ski out',
+      price: '€40,800', skiInOut: true, type: 'ski',
+      features: 'Decorative fireplace · Sunny balcony · Shops nearby',
+    },
+  ];
+
+  // ──────────────────────────────────────────────
+  // Distance helpers
+  // ──────────────────────────────────────────────
+  function calcDist(apt) {
+    const d = L.latLng(REF.lat, REF.lng).distanceTo(L.latLng(apt.lat, apt.lng));
+    const m = Math.round(d / 10) * 10;
+    const min = Math.max(1, Math.round(m / 80));
+    return { m, min };
+  }
+
+  function distLabel(d) {
+    if (d.m < 50)   return 'immediate';
+    if (d.m < 1000) return `${d.m}m · ${d.min} min walk`;
+    return `${(d.m/1000).toFixed(1)}km · ${d.min} min walk`;
+  }
+
+  function typeColor(apt) {
+    if (apt.skiInOut)          return '#4caf7d';
+    if (apt.type === 'chenus') return '#c9a96e';
+    return '#b07fc8';
+  }
+
+  function badgeHtml(apt) {
+    const cls = apt.skiInOut ? 'badge-ski' : apt.type === 'chenus' ? 'badge-chenus' : 'badge-centre';
+    const lbl = apt.skiInOut ? 'Ski in/out' : apt.sector.split(',')[0].trim();
+    return `<span class="badge ${cls}">${lbl}</span>`;
+  }
+
+  // ──────────────────────────────────────────────
+  // Reference marker
+  // ──────────────────────────────────────────────
+  const refIcon = L.divIcon({
+    className: '',
+    html: `<div style="
+      background:#fff; border:3px solid #c9a96e; border-radius:50%;
+      width:40px; height:40px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; box-shadow:0 2px 14px rgba(201,169,110,0.7); cursor:pointer;
+    ">★</div>`,
+    iconSize: [40,40], iconAnchor: [20,20], popupAnchor: [0,-24],
+  });
+
+  let refMarker;
+  const markers   = [];
+  const polylines = {};
+
+  function updateDistBadge(apt) {
+    const d = calcDist(apt);
+    const el = document.getElementById(`dist-${apt.id}`);
+    if (el) el.textContent = distLabel(d);
+  }
+
+  function redrawPolyline(apt) {
+    if (polylines[apt.id]) { polylines[apt.id].remove(); }
+    polylines[apt.id] = L.polyline([[REF.lat, REF.lng],[apt.lat, apt.lng]], {
+      color: typeColor(apt), weight: 1, dashArray: '4 6', opacity: 0.35,
+    }).addTo(map);
+  }
+
+  function buildMap() {
+    refMarker = L.marker([REF.lat, REF.lng], { icon: refIcon, draggable: true })
+      .addTo(map)
+      .bindPopup(`
+        <div class="popup-content">
+          <h3>★ Reference point</h3>
+          <p><strong style="color:#c9a96e;">311 Rue des Chenus</strong><br>73120 Courchevel 1850</p>
+        </div>`, { maxWidth: 220 });
+
+    refMarker.on('dragend', () => {
+      const ll = refMarker.getLatLng();
+      REF.lat = ll.lat; REF.lng = ll.lng;
+      apartments.forEach(apt => {
+        redrawPolyline(apt);
+        updateDistBadge(apt);
+      });
+      showCoords();
+    });
+
+    const listEl = document.getElementById('apt-list');
+
+    apartments.forEach((apt) => {
+      const d     = calcDist(apt);
+      const color = typeColor(apt);
+      const short = apt.ref.replace('COSY CHABLIS','COSY').split(' ').pop();
+
+      listEl.innerHTML += `
+        <div class="apt-card" onclick="flyTo(${apt.id})">
+          <div class="ref">${apt.ref}</div>
+          <div class="details">${apt.size} · ${apt.beds} · ${apt.guests}</div>
+          <div class="price">${apt.price}</div>
+          <div class="badges">
+            ${badgeHtml(apt)}
+            <span class="badge badge-dist" id="dist-${apt.id}">${distLabel(d)}</span>
+          </div>
+        </div>`;
+
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="
+          background:${color}; border:2px solid #fff; border-radius:50%;
+          width:34px; height:34px;
+          display:flex; align-items:center; justify-content:center;
+          font-size:9px; font-weight:bold; color:#0f0f0f;
+          box-shadow:0 2px 10px rgba(0,0,0,0.5); cursor:grab;
+          font-family:Arial,sans-serif; letter-spacing:-0.5px;
+        ">${short}</div>`,
+        iconSize: [34,34], iconAnchor: [17,17], popupAnchor: [0,-20],
+      });
+
+      const marker = L.marker([apt.lat, apt.lng], { icon, draggable: true })
+        .addTo(map)
+        .bindPopup(`
+          <div class="popup-content">
+            <h3>${apt.ref}</h3>
+            <p>
+              <strong style="color:#c9a96e;">${apt.size}</strong> · ${apt.beds} · ${apt.guests}<br>
+              ${apt.skiInOut ? '<span class="highlight">⛷ Ski in / Ski out</span><br>' : ''}
+              📍 ${apt.location}<br><br>${apt.features}
+            </p>
+            <div class="price-line">💰 ${apt.price} / season</div>
+            <div class="dist-line" id="popup-dist-${apt.id}">📏 ${distLabel(d)} from reference point</div>
+          </div>`, { maxWidth: 250, minWidth: 220 });
+
+      marker.on('dragend', () => {
+        const ll = marker.getLatLng();
+        apt.lat = ll.lat; apt.lng = ll.lng;
+        redrawPolyline(apt);
+        updateDistBadge(apt);
+        showCoords();
+      });
+
+      markers.push({ id: apt.id, marker });
+      redrawPolyline(apt);
+    });
+  }
+
+  function showCoords() {
+    const lines = [
+      `REF: ${REF.lat.toFixed(6)}, ${REF.lng.toFixed(6)}  // 311 Route des Chenus`,
+      ...apartments.map(a => `id:${a.id} ${a.ref.padEnd(14)}: ${a.lat.toFixed(6)}, ${a.lng.toFixed(6)}`)
+    ].join('\n');
+    document.getElementById('coords-box').value = lines;
+    document.getElementById('coords-panel').style.display = 'block';
+  }
+
+  function flyTo(id) {
+    const apt = apartments.find(a => a.id === id);
+    map.flyTo([apt.lat, apt.lng], 17, { animate: true, duration: 0.8 });
+    markers.find(m => m.id === id).marker.openPopup();
+  }
+
+  function flyToRef() {
+    map.flyTo([REF.lat, REF.lng], 17, { animate: true, duration: 0.8 });
+    refMarker.openPopup();
+  }
+
+  buildMap();
+</script>
+</body>
+</html>
