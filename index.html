@@ -246,13 +246,13 @@
   //   OSM Chenus gondola : 45.41456, 6.63215 | Verdons lift : 45.41479, 6.63308
   //   OSM Croisette : 45.41520, 6.63370 | Bellecôte : 45.41357, 6.63377
   //   RPDP = Résidence Rond Point des Pistes → Rue de Park City (confirmé web)
-  const REF = { label: '311 Route des Chenus', lat: 45.41571, lng: 6.62934 }; // Google ROOFTOP
+  const REF = { label: '311 Route des Chenus', lat: 45.415710, lng: 6.629340 }; // validé manuellement 2026-04-22
 
   const apartments = [
     // ─ Centre 1850 — Rue de Park City / Croisette / front de neige
     {
       id:  1, ref: 'CAR 109',
-      lat: 45.41505, lng: 6.63355,   // Croisette area, centre village
+      lat: 45.415835, lng: 6.630914,
       size: '35 m²', beds: '1 ch + coin montagne', guests: '4 pers',
       sector: 'Centre 1850', location: 'Centre 1850',
       price: '15 700 €', skiInOut: false, type: 'centre',
@@ -260,7 +260,7 @@
     },
     {
       id:  2, ref: 'RPDP 606',
-      lat: 45.41510, lng: 6.63150,   // Rue de Park City (OSM 45.41514, 6.63129)
+      lat: 45.415692, lng: 6.631193,
       size: '38 m²', beds: '1 ch + cabine', guests: '4 pers',
       sector: 'Centre, ski-in/ski-out', location: 'Centre 1850 — Ski in / Ski out',
       price: '19 100 €', skiInOut: true, type: 'ski',
@@ -268,7 +268,7 @@
     },
     {
       id:  3, ref: 'RPDP 305',
-      lat: 45.41495, lng: 6.63200,   // Rue de Park City (OSM 45.41491, 6.63209)
+      lat: 45.415541, lng: 6.631118,
       size: '38 m²', beds: '1 ch + cabine', guests: '4 pers',
       sector: 'Centre, ski-in/ski-out', location: 'Centre 1850 — Ski in / Ski out',
       price: '21 500 €', skiInOut: true, type: 'ski',
@@ -276,7 +276,7 @@
     },
     {
       id:  4, ref: 'CHAM 28',
-      lat: 45.41470, lng: 6.63270,   // front de neige — Verdons/Chenus gondola area
+      lat: 45.415413, lng: 6.631172,
       size: '58 m²', beds: '2 ch', guests: '5 pers',
       sector: 'Centre, front de neige', location: 'Centre 1850 — Front de neige',
       price: '26 600 €', skiInOut: false, type: 'centre',
@@ -284,7 +284,7 @@
     },
     {
       id:  5, ref: 'CAVAN',
-      lat: 45.41555, lng: 6.63210,   // Rue de Plantret area, proche pistes
+      lat: 45.416490, lng: 6.627921,
       size: '95 m²', beds: '2 ch', guests: '4 pers',
       sector: 'Chalet, proche pistes', location: 'Proche pistes',
       price: '27 000 €', skiInOut: false, type: 'centre',
@@ -292,16 +292,16 @@
     },
     {
       id:  6, ref: 'COSY CHABLIS',
-      lat: 45.41520, lng: 6.63420,   // Croisette / Verdons area, centre proche pistes
+      lat: 45.416061, lng: 6.630850,
       size: '50 m²', beds: '2 ch', guests: '4 pers',
       sector: 'Centre, proche pistes', location: 'Centre 1850 — Proche pistes',
       price: '39 450 €', skiInOut: false, type: 'centre',
       features: 'Appartement haut de gamme · Proche pistes · Déco soignée',
     },
-    // ─ Secteur Chenus (Route des Chenus, lng ~6.627–6.631)
+    // ─ Secteur Chenus (Route des Chenus)
     {
       id:  7, ref: 'ROUL 28',
-      lat: 45.41680, lng: 6.62820,   // Route des Chenus residential
+      lat: 45.416566, lng: 6.628575,
       size: '45 m²', beds: '2 ch', guests: '4 pers',
       sector: 'Quartier Chenus', location: 'Secteur Chenus',
       price: '17 700 €', skiInOut: false, type: 'chenus',
@@ -309,7 +309,7 @@
     },
     {
       id:  8, ref: 'ARC 3',
-      lat: 45.41730, lng: 6.62960,   // Route des Chenus / upper Chenus
+      lat: 45.416159, lng: 6.628801,
       size: '50 m²', beds: '2 ch', guests: '4 pers',
       sector: 'Quartier Chenus', location: 'Secteur Chenus',
       price: '19 700 €', skiInOut: false, type: 'chenus',
@@ -317,7 +317,7 @@
     },
     {
       id:  9, ref: 'SUG 11',
-      lat: 45.416444, lng: 6.629722,
+      lat: 45.416542, lng: 6.629670,
       size: '55 m²', beds: '3 ch', guests: '6 pers',
       sector: 'Centre, Quartier Chenus', location: 'Entrée Chenus — 100m des pistes',
       price: '23 600 €', skiInOut: false, type: 'chenus',
@@ -325,7 +325,7 @@
     },
     {
       id: 10, ref: 'CHANT 4B',
-      lat: 45.415752, lng: 6.628261,
+      lat: 45.416046, lng: 6.627352,
       size: '81 m²', beds: '3 ch', guests: '6 pers',
       sector: 'Quartier Chenus', location: 'Secteur Chenus — 100m des pistes',
       price: '25 700 €', skiInOut: false, type: 'chenus',
@@ -333,7 +333,7 @@
     },
     {
       id: 11, ref: 'CHANT 3B',
-      lat: 45.415952, lng: 6.628061,
+      lat: 45.416227, lng: 6.627395,
       size: '75 m²', beds: '3 ch', guests: '7 pers',
       sector: 'Quartier Chenus', location: 'Secteur Chenus — 100m des pistes',
       price: '30 600 €', skiInOut: false, type: 'chenus',
@@ -341,7 +341,7 @@
     },
     {
       id: 12, ref: 'RPDP 502',
-      lat: 45.41500, lng: 6.63175,   // Rue de Park City (OSM 45.41514, 6.63129)
+      lat: 45.415654, lng: 6.630925,
       size: '68 m²', beds: '3 ch', guests: '6 pers',
       sector: 'Centre, ski-in/ski-out', location: 'Centre 1850 — Ski in / Ski out',
       price: '40 800 €', skiInOut: true, type: 'ski',
